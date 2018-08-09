@@ -10,12 +10,31 @@
     </header>
     <div class="w3-content" style="max-width:2000px;margin-top:46px">
       <fieldset>
-        <form action="/getRecommendations" method="post">
+        <form action="/addToList" method="post">
           <input name="artistName" type="text" placeholder="Artist">
+          <input type="submit" value="add">
+        </form>
+      </fieldset>
+        <ul style="list-style-type:none">
+          
+          <li>
+            <% artistInfo.forEach(function(artist) { %>
+              <img height="100" width="100" src=<%= artist.img %>></img>
+              <%= artist.name %> <!--<%= artist.artistId %>-->
+            <% }); %>
+          </li>
+          
+        </ul>
+        <div>
+          
+        </div>
+      <fieldset>
+        <form action="/getRecommendations" method="post">
           <input name="playlistLength" type="text" placeholder="Number of songs" required>
           <input type="submit" value="Get Recommendations">
         </form>
       </fieldset>
+    
     </div>
     <footer>
         <% include ../partials/footer %>

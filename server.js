@@ -4,12 +4,14 @@ const request = require('request');
 const querystring = require('querystring');
 const rp = require('request-promise');
 const app = express();
+require('dotenv').config();
 
-const redirect_uri = 'http://localhost:3000/callback';
+const redirect_uri = 'http://localhost:3000/callback'
 const client_id = process.env.SPOTIFY_CLIENT_ID
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET
-let access_token = "";
-let trackURIs = [];
+let access_token = ""
+let trackURIs = []
+let artistInfo = []
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,13 +21,13 @@ app.get('/', function (req, res) {
   res.render('pages/index');
 })
 app.get('/home', function (req, res) {
-  res.render('pages/home');
+  res.render('pages/home', {
+    artistInfo: artistInfo
+  });
 })
 
-app.post('/getRecommendations', function (req, res) {
-  let playlistLength = req.body.playlistLength
+app.post('/addToList', function(req, res){
   let artistName = req.body.artistName
-
   let Options = {
     url: `https://api.spotify.com/v1/search?q=${artistName}&type=artist&limit=1`,
     headers: {
@@ -33,38 +35,60 @@ app.post('/getRecommendations', function (req, res) {
     },
     json: true
   }
-  request.get(Options, function (err, response, body) { //Search for Id
+  request.get(Options, function (err, response, body) {
     if(err){console.log(err.message)}
     else{
-      let artistId = body.artists.items[0].id
-      let Options = {
-        url: `https://api.spotify.com/v1/recommendations?seed_artists=${artistId}&limit=${playlistLength}`,
-        headers: {
-          'Authorization': 'Bearer ' + access_token
-        },
-        json: true
+      console.log(body.artists.items[0])
+      let obj = {
+        img: body.artists.items[0].images[2].url,
+        name: body.artists.items[0].name,
+        artistId: body.artists.items[0].id
       }
-      request.get(Options, function (err, response, body) {
-        if(err){console.log(err.message)}
-        else{
-          let tracks = []
-          for(i = 0; i < body.tracks.length; i++){
-            let track = body.tracks[i]
-            let obj = {
-              number: i+1,
-              name: track.name,
-              artist: track.artists[0].name
-            }
-            tracks.push(obj)
-            trackURIs.push(track.uri)
-          }
-          res.render('pages/playlist', {
-            tracks: tracks
-          });
-        } 
+      artistInfo.push(obj)
+      res.render('pages/home', {
+        artistInfo: artistInfo
       });
     }
+  })
+})
+
+app.post('/getRecommendations', function (req, res) {
+  let playlistLength = req.body.playlistLength
+  let artistQuery = ""
+
+  for(i=0; i < artistInfo.length; i++){
+    artistQuery += artistInfo[i].artistId + ","
+  }
+
+  artistQuery = artistQuery.slice(0, -1);
+
+  let Options = {
+    url: `https://api.spotify.com/v1/recommendations?seed_artists=${artistQuery}&limit=${playlistLength}`,
+    headers: {
+      'Authorization': 'Bearer ' + access_token
+    },
+    json: true
+  }
+  request.get(Options, function (err, response, body) {
+    if(err){console.log(err.message)}
+    else{
+      let tracks = []
+      for(i = 0; i < body.tracks.length; i++){
+        let track = body.tracks[i]
+        let obj = {
+          number: i+1,
+          name: track.name,
+          artist: track.artists[0].name
+        }
+        tracks.push(obj)
+        trackURIs.push(track.uri)
+      }
+      res.render('pages/playlist', {
+        tracks: tracks
+      });
+    } 
   });
+
 })
 
 app.post('/makePlaylist', function (req, res) {
@@ -111,7 +135,7 @@ app.post('/makePlaylist', function (req, res) {
           request.post(Options, function (err, response, body) {
             if(err){console.log(err.message)}
             else{
-              res.render('pages/home');
+              res.render('pages/home', artistIds);
             }
           });
         }
