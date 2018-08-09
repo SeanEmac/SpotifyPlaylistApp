@@ -17,12 +17,10 @@
         <% }); %>
       </ul>
     </div>
-    <fieldset>
-        <form action="/makePlaylist" method="post">
-            <input name="playlistName" type="text" class="ghost-input" placeholder="Playlist Name" required>
-            <input type="submit" class="ghost-button" value="Add to your playlists">
-        </form>
-    </fieldset>
+    <form action="/makePlaylist" method="post">
+        <input name="playlistName" type="text" class="ghost-input" placeholder="Playlist Name" required>
+        <input type="submit" class="ghost-button" value="Add to your playlists">
+    </form>
     <footer>
         <% include ../partials/footer %>
     </footer>

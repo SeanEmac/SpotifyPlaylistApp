@@ -10,8 +10,10 @@
     </header>
     <div class="w3-content" style="max-width:2000px;margin-top:46px">
       <fieldset>
-        <form action="/getrec" method="get">
-          <input type="submit" class="ghost-button" value="Get Recommendations">
+        <form action="/getRecommendations" method="post">
+          <input name="artistName" type="text" placeholder="Artist">
+          <input name="playlistLength" type="text" placeholder="Number of songs" required>
+          <input type="submit" value="Get Recommendations">
         </form>
       </fieldset>
     </div>
