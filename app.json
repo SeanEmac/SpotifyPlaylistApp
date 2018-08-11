@@ -1,0 +1,15 @@
+{
+    "name": "Spotify Playlist Generator",
+    "description": "Create playlists based on artist inputs",
+    "repository": "https://github.com/SeanEmac/SpotifyPlaylistApp",
+    "env": {
+        "SPOTIFY_CLIENT_ID": {
+          "description": "id",
+          "value": "a3e402af8edc47f09f0d2092cd2697a8"
+        },
+        "SPOTIFY_CLIENT_SECRET": {
+          "description": "secret",
+          "value": "94d05387e51b4523bbd4ad4691136c25"
+        }
+      }
+}
