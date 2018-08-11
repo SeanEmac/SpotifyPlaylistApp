@@ -2,9 +2,12 @@
   "name": "setlist-creator",
   "version": "1.0.0",
   "description": "Using spotify Api to make a basic app",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
+  },
+  "engines":{
+    "node": "8.10.0"
   },
   "author": "Sean Mc Cann",
   "license": "ISC",
