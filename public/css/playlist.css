@@ -34,6 +34,9 @@ h4 {
 .fab {
     color: #fff;
   }
+.fa-2x {
+    padding: 5px;
+ }
 .col-md-4 {
     text-align: center;
 }

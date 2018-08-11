@@ -64,6 +64,9 @@ body {
   .fab {
     color: #fff;
   }
+  .fa-2x {
+    padding: 5px;
+ }
   .btn {
     margin-bottom: 30rem;
     color: #fff;

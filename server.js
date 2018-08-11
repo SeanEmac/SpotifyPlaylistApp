@@ -123,6 +123,8 @@ app.get('/callback', function(req, res) {
   }
   request.post(authOptions, function(error, response, body) {
     access_token = body.access_token
+    trackURIs = []
+    artistInfo = []
     //let uri = 'http://localhost:3000/home'
     let uri = 'https://boiling-dusk-55361.herokuapp.com/home'
     res.redirect(uri)
