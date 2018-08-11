@@ -1,26 +1,23 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <title>Login</title>
     <% include ../partials/head %>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/index.css" type="text/css"> 
   </head>
 
-  <body>
-    <header>
-      <% include ../partials/header %>
-    </header>
-    <div class="w3-content" style="max-width:2000px;margin-top:46px">
-
-
-      <fieldset>
-        <form action="/login" method="get">
-          <input type="submit" class="ghost-button" value="login">
-        </form>
-      </fieldset>
-
-    </div>
-    <footer>
-      <% include ../partials/footer %>
-    </footer>
+  <body class="text-center">
+    <form class="form-signin" action="/login" method="get">
+      <img class="mb-4" src="/images/SpotifyGreen.png" alt="" width="96" height="96">
+      <h1 class="h3 mb-3 font-weight-normal">Sign in to Spotify</h1>
+      <button class="btn btn-light btn-primary btn-block" type="submit">Sign in</button>
+      <p class="mt-5 mb-3">
+        <a href="https://www.linkedin.com/in/mccannsean11/"><i class="fab fa-linkedin fa-2x"></i></a>
+        <a href="https://github.com/SeanEmac"><i class="fab fa-github fa-2x"></i></a>
+      </p> 
+    </form>
+  
+  <% include ../partials/scripts %>
   </body>
+  
 </html>

@@ -1,0 +1,39 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #333;
+  color: #fff;
+  
+}
+h4 {
+    padding-right: 40px;
+}
+.table-wrapper-scroll-y {
+    display: block;
+    max-height: 550px;
+    overflow-y: auto;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+    background-color: #333;
+}
+  
+.table {
+    background-color: #333;
+}
+.borderless td, .borderless th {
+    border: none;
+}
+.fab {
+    color: #fff;
+  }
+.col-md-4 {
+    text-align: center;
+}

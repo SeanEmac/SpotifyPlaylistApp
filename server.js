@@ -24,16 +24,18 @@ app.get('/home', function (req, res) {
   res.render('pages/home', { artistInfo: artistInfo });
 })
 
-app.post('/addToList', function(req, res){
+app.post('/addToList', async function(req, res){
   let artistName = req.body.artistName
 
   await search(artistName).then(function(result) {
-    let artist = body.artist.items[0]
+    let artist = result.data.artists.items[0]
+    console.log(result.data.artists.items[0])
     let obj = {
-      img: artist.url,
+      img: artist.images[0].url,
       name: artist.name,
       artistId: artist.id
     }
+    console.log(obj)
     artistInfo.push(obj)
     res.render('pages/home', { artistInfo: artistInfo });
   })
@@ -57,7 +59,8 @@ app.post('/getRecommendations', async function (req, res) {
       let obj = {
         number: i+1,
         name: track.name,
-        artist: track.artists[0].name
+        artist: track.artists[0].name,
+        duration: toMins(track.duration_ms)
       }
       tracks.push(obj)
       trackURIs.push(track.uri)
@@ -177,6 +180,12 @@ async function search(artistName) {
         'Authorization': 'Bearer ' + access_token
       }
   });
+}
+
+function toMins(millis) {
+  var minutes = Math.floor(millis / 60000);
+  var seconds = ((millis % 60000) / 1000).toFixed(0);
+  return (seconds == 60 ? (minutes+1) + ":00" : minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
 }
 
 app.listen(3000, function () {

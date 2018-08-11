@@ -3,26 +3,53 @@
   <head>
     <title>Results Page</title>
     <% include ../partials/head %>
+    <link rel="stylesheet" href="/css/playlist.css" type="text/css">
   </head>
   <body>
-    <header>
-      <% include ../partials/header %>
-    </header>
+
+      
+
+        <div class="col-md-8">
+                  <h2>Your playlist</h2>
+                  <div class="table-wrapper-scroll-y">
+                    <table class='table borderless'>
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Title</th>
+                          <th scope="col">Artist</th>
+                          <th scope="col"><i class="far fa-clock"></i></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% tracks.forEach(function(track) { %>
+                          <tr>
+                            <th scope="row"><%= track.number %></th>
+                            <td><%= track.name %></td>
+                            <td><%= track.artist %></td>
+                            <td><%= track.duration %></td>
+                          </tr>
+                        <% }); %>
+                      </tbody>
+                    </table>
+                  </div>
+        </div>
+        <div class="col-md-4">
+          <h3>Like it? add it to your spotify</h3>
+            <form  action="/makePlaylist" method="post">
+                <input class="form-control mb-2" name="playlistName" type="text" placeholder="Playlist Name" required>
+                <button type="submit" class="btn btn-info">Add to Spotify</i></button>
+            </form>
+          
+          <div>
+            <p class="mt-5 mb-3">
+              <a href="https://www.linkedin.com/in/mccannsean11/"><i class="fab fa-linkedin fa-2x"></i></a>
+              <a href="https://github.com/SeanEmac"><i class="fab fa-github fa-2x"></i></a>
+            </p>
+          </div>
+        </div>
     
-    <div class="w3-content" style="max-width:2000px;margin-top:46px">
-      <h2> Based off your inputs</h2>
-      <ul style="list-style-type:none">
-        <% tracks.forEach(function(track) { %>
-          <li><%= track.number %> <%= track.name %> <%= track.artist %></li>
-        <% }); %>
-      </ul>
-    </div>
-    <form action="/makePlaylist" method="post">
-        <input name="playlistName" type="text" class="ghost-input" placeholder="Playlist Name" required>
-        <input type="submit" class="ghost-button" value="Add to your playlists">
-    </form>
-    <footer>
-        <% include ../partials/footer %>
-    </footer>
+
+  
   </body>
 </html>
