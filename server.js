@@ -8,10 +8,8 @@ require('dotenv').config();
 
 //const redirect_uri = 'http://localhost:3000/callback';
 const redirect_uri = 'https://boiling-dusk-55361.herokuapp.com/callback';
-//const client_id = process.env.SPOTIFY_CLIENT_ID;
-const client_id = ENV['SPOTIFY_CLIENT_ID']
-//const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
-const client_secret = ENV['SPOTIFY_CLIENT_SECRET']
+const client_id = process.env.SPOTIFY_CLIENT_ID;
+const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 const port = process.env.PORT || 3000;
 
 let access_token = ""
