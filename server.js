@@ -9,6 +9,8 @@ require('dotenv').config();
 const redirect_uri = 'http://localhost:3000/callback'
 const client_id = process.env.SPOTIFY_CLIENT_ID
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET
+const port = process.env.PORT || 3000;
+
 let access_token = ""
 let trackURIs = []
 let artistInfo = []
@@ -188,9 +190,9 @@ function toMins(millis) {
   return (seconds == 60 ? (minutes+1) + ":00" : minutes + ":" + (seconds < 10 ? "0" : "") + seconds);
 }
 
-app.listen(3000, function () {
-  console.log('Running on localhost:3000')
-})
+app.listen(port, function() {
+  console.log('Our app is running on http://localhost:' + port);
+});
 
 /*
   //let genre ="r-n-b"{
