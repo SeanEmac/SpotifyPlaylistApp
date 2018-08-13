@@ -8,10 +8,10 @@ require('dotenv').config();
 
 //const redirect_uri = 'http://localhost:3000/callback';
 const redirect_uri = 'https://playlist-gen.herokuapp.com/callback';
-//const client_id = process.env.SPOTIFY_CLIENT_ID;
-const client_id = "a3e402af8edc47f09f0d2092cd2697a8";
-//const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
-const client_secret = "94d05387e51b4523bbd4ad4691136c25";
+const client_id = process.env.SPOTIFY_CLIENT_ID;
+//const client_id = "a3e402af8edc47f09f0d2092cd2697a8";
+const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+//const client_secret = "94d05387e51b4523bbd4ad4691136c25";
 const port = process.env.PORT || 3000;
 
 let access_token = ""
