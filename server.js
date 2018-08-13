@@ -8,8 +8,8 @@ const cookieParser = require('cookie-parser');
 const axios = require('axios');
 require('dotenv').config();
 
-const redirect_uri = 'http://localhost:3000/callback';
-//const redirect_uri = 'https://playlist-gen.herokuapp.com/callback';
+//const redirect_uri = 'http://localhost:3000/callback';
+const redirect_uri = 'https://playlist-gen.herokuapp.com/callback';
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 const port = process.env.PORT || 3000;
@@ -142,8 +142,8 @@ app.get('/callback', function(req, res) {
   }
   request.post(authOptions, function(error, response, body) {
     res.cookie('access_token', body.access_token)
-    let uri = 'http://localhost:3000/home'
-    //let uri = 'https://playlist-gen.herokuapp.com/home'
+    //let uri = 'http://localhost:3000/home'
+    let uri = 'https://playlist-gen.herokuapp.com/home'
     res.redirect(uri)
   })
 })
