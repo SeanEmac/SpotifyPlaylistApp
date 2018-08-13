@@ -3,43 +3,55 @@ const bodyParser = require('body-parser');
 const request = require('request');
 const querystring = require('querystring');
 const app = express();
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const axios = require('axios');
 require('dotenv').config();
 
-//const redirect_uri = 'http://localhost:3000/callback';
-const redirect_uri = 'https://playlist-gen.herokuapp.com/callback';
+const redirect_uri = 'http://localhost:3000/callback';
+//const redirect_uri = 'https://playlist-gen.herokuapp.com/callback';
 const client_id = process.env.SPOTIFY_CLIENT_ID;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 const port = process.env.PORT || 3000;
 
-let access_token = ""
-let trackURIs = []
-let artistInfo = []
-
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {}
+}))
+
 app.set('view engine', 'ejs')
 
 app.get('/', function (req, res) {
   res.render('pages/index');
 })
 app.get('/home', function (req, res) {
-  res.render('pages/home', { artistInfo: artistInfo });
+  res.render('pages/home', { artistInfo: [] });
 })
 
 app.post('/addToList', async function(req, res){
+  let access_token = req.cookies.access_token
   let artistName = req.body.artistName
+  let artistInfo = []
 
-  await search(artistName).then(function(result) {
+  if(req.cookies.artistInfo){
+    artistInfo = req.cookies.artistInfo
+  }
+
+  await search(artistName, access_token).then(function(result) {
     let artist = result.data.artists.items[0]
-    console.log(result.data.artists.items[0])
     let obj = {
       img: artist.images[0].url,
       name: artist.name,
       artistId: artist.id
     }
-    console.log(obj)
     artistInfo.push(obj)
+    res.cookie('artistInfo', artistInfo)
     res.render('pages/home', { artistInfo: artistInfo });
   })
 })
@@ -47,6 +59,9 @@ app.post('/addToList', async function(req, res){
 app.post('/getRecommendations', async function (req, res) {
   let playlistLength = req.body.playlistLength
   let artistQuery = ""
+  
+  let access_token = req.cookies.access_token
+  let artistInfo = req.cookies.artistInfo
 
   for(i=0; i < artistInfo.length; i++){
     artistQuery += artistInfo[i].artistId + ","
@@ -54,8 +69,9 @@ app.post('/getRecommendations', async function (req, res) {
   
   artistQuery = artistQuery.slice(0, -1);
 
-  await getRecommendations(artistQuery, playlistLength).then(function(result) {
+  await getRecommendations(artistQuery, playlistLength, access_token).then(function(result) {
     let tracks = []
+    let trackURIs = []
     
     for(i = 0; i < result.data.tracks.length; i++){
       let track = result.data.tracks[i]
@@ -67,6 +83,7 @@ app.post('/getRecommendations', async function (req, res) {
       }
       tracks.push(obj)
       trackURIs.push(track.uri)
+      res.cookie('URIs', trackURIs)
     }
     res.render('pages/playlist', { tracks: tracks });
   })
@@ -77,16 +94,20 @@ app.post('/makePlaylist', async function (req, res) {
   let playlistName = req.body.playlistName
   let userId = ""
   let playlistId = ""
+  let access_token = req.cookies.access_token
+  let trackURIs = req.cookies.URIs
 
-  await getUser().then(function(result) {
+  await getUser(access_token).then(function(result) {
     userId = result.data.id
   })
 
-  await makePlaylist(userId, playlistName).then(function(result) {
+  await makePlaylist(userId, playlistName, access_token).then(function(result) {
     playlistId = result.data.id
   })
 
-  await addToPlaylist(userId, playlistId, trackURIs).then(function(result) {
+  await addToPlaylist(userId, playlistId, trackURIs, access_token).then(function(result) {
+    res.clearCookie("URIs");
+    res.clearCookie("artistInfo");
     res.render('pages/done')
   })
 
@@ -120,17 +141,15 @@ app.get('/callback', function(req, res) {
     json: true
   }
   request.post(authOptions, function(error, response, body) {
-    access_token = body.access_token
-    trackURIs = []
-    artistInfo = []
-    //let uri = 'http://localhost:3000/home'
-    let uri = 'https://playlist-gen.herokuapp.com/home'
+    res.cookie('access_token', body.access_token)
+    let uri = 'http://localhost:3000/home'
+    //let uri = 'https://playlist-gen.herokuapp.com/home'
     res.redirect(uri)
   })
 })
 
 //FUNCTIONS
-async function getRecommendations(artistQuery, playlistLength) {
+async function getRecommendations(artistQuery, playlistLength, access_token) {
   return await axios({
       url: `https://api.spotify.com/v1/recommendations?seed_artists=${artistQuery}&limit=${playlistLength}`,
       method: 'get',
@@ -140,7 +159,7 @@ async function getRecommendations(artistQuery, playlistLength) {
   });
 }
 
-async function getUser() {
+async function getUser(access_token) {
   return await axios({
       url: `https://api.spotify.com/v1/me`,
       method: 'get',
@@ -150,7 +169,7 @@ async function getUser() {
   });
 }
 
-async function makePlaylist(userId, playlistName) {
+async function makePlaylist(userId, playlistName, access_token) {
   return await axios({
       url: `https://api.spotify.com/v1/users/${userId}/playlists`,
       method: 'post',
@@ -164,7 +183,7 @@ async function makePlaylist(userId, playlistName) {
   });
 }
 
-async function addToPlaylist(userId, playlistId, trackURIs) {
+async function addToPlaylist(userId, playlistId, trackURIs, access_token) {
   return await axios({
       url: `https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks`,
       method: 'post',
@@ -178,7 +197,7 @@ async function addToPlaylist(userId, playlistId, trackURIs) {
   });
 }
 
-async function search(artistName) {
+async function search(artistName, access_token) {
   return await axios({
       url: `https://api.spotify.com/v1/search?q=${artistName}&type=artist&limit=1`,
       method: 'get',
@@ -195,11 +214,5 @@ function toMins(millis) {
 }
 
 app.listen(port, function() {
-  console.log('Our app is running on http://localhost:' + port);
+  console.log('Our app is running on port ' + port);
 });
-
-/*
-  //let genre ="r-n-b"{
-    //"genres" : [ "acoustic", "afrobeat", "alt-rock", "alternative", "ambient", "anime", "black-metal", "bluegrass", "blues", "bossanova", "brazil", "breakbeat", "british", "cantopop", "chicago-house", "children", "chill", "classical", "club", "comedy", "country", "dance", "dancehall", "death-metal", "deep-house", "detroit-techno", "disco", "disney", "drum-and-bass", "dub", "dubstep", "edm", "electro", "electronic", "emo", "folk", "forro", "french", "funk", "garage", "german", "gospel", "goth", "grindcore", "groove", "grunge", "guitar", "happy", "hard-rock", "hardcore", "hardstyle", "heavy-metal", "hip-hop", "holidays", "honky-tonk", "house", "idm", "indian", "indie", "indie-pop", "industrial", "iranian", "j-dance", "j-idol", "j-pop", "j-rock", "jazz", "k-pop", "kids", "latin", "latino", "malay", "mandopop", "metal", "metal-misc", "metalcore", "minimal-techno", "movies", "mpb", "new-age", "new-release", "opera", "pagode", "party", "philippines-opm", "piano", "pop", "pop-film", "post-dubstep", "power-pop", "progressive-house", "psych-rock", "punk", "punk-rock", "r-n-b", "rainy-day", "reggae", "reggaeton", "road-trip", "rock", "rock-n-roll", "rockabilly", "romance", "sad", "salsa", "samba", "sertanejo", "show-tunes", "singer-songwriter", "ska", "sleep", "songwriter", "soul", "soundtracks", "spanish", "study", "summer", "swedish", "synth-pop", "tango", "techno", "trance", "trip-hop", "turkish", "work-out", "world-music" ]
-  //}
-*/
