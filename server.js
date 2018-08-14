@@ -31,6 +31,8 @@ app.get('/', function (req, res) {
   res.render('pages/index');
 })
 app.get('/home', function (req, res) {
+  res.clearCookie("URIs");
+  res.clearCookie("artistInfo");
   res.render('pages/home', { artistInfo: [] });
 })
 

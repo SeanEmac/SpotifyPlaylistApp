@@ -37,10 +37,13 @@
         <div class="col-md-4">
           <h3>Like it? add it to your spotify.</h3>
             <form  action="/makePlaylist" method="post">
-                <input class="form-control mb-2" name="playlistName" type="text" placeholder="Playlist Name" required>
-                <button type="submit" class="btn btn-info">Add to Spotify</i></button>
+              <input class="form-control mb-2" name="playlistName" type="text" placeholder="Playlist Name" required>
+              <button type="submit" class="btn btn-info">Add to Spotify</i></button>
             </form>
-          
+          <h3>Or...</h3>
+            <form action="/home" method="get">
+              <button type="submit" class="btn btn-info">Try Again</button>
+            </form>
           <div>
             <p class="mt-5 mb-3">
               <a href="https://www.linkedin.com/in/mccannsean11/"><i class="fab fa-linkedin fa-2x"></i></a>
